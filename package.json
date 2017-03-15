@@ -1,0 +1,56 @@
+{
+  "name": "muffin-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "dependencies": {
+    "config": "^1.21.0",
+    "dotenv": "^4.0.0",
+    "es6-promisify": "^4.1.0",
+    "expect": "^1.20.2",
+    "jsonwebtoken": "^7.3.0",
+    "koa": "^2.0.0",
+    "koa-bodyparser": "^3.2.0",
+    "koa-convert": "^1.2.0",
+    "koa-csrf": "^2.5.0",
+    "koa-favicon": "^2.0.0",
+    "koa-logger": "^2.0.0",
+    "koa-passport": "^2.2.2",
+    "koa-router": "^7.0.1",
+    "koa-static": "^3.0.0",
+    "mongoose": "^4.6.0",
+    "mongoose-beautiful-unique-validation": "^5.1.1",
+    "nodemailer": "^2.6.0",
+    "nodemailer-html-to-text": "^2.1.0",
+    "nodemailer-ses-transport": "^1.4.0",
+    "nodemailer-smtp-transport": "^2.7.2",
+    "nodemailer-stub-transport": "^1.1.0",
+    "passport-jwt": "^2.2.1",
+    "passport-local": "^1.0.0",
+    "request": "^2.74.0",
+    "request-promise": "^4.1.1",
+    "selenium-webdriver": "*",
+    "should": "*",
+    "socket.io": "^1.4.8",
+    "socket.io-emitter": "^1.0.0",
+    "trace": "^2.3.3",
+    "yargs": "^5.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/astupak/muffin-server.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/astupak/muffin-server/issues"
+  },
+  "homepage": "https://github.com/astupak/muffin-server#readme",
+  "devDependencies": {
+    "nodemon": "^1.11.0"
+  }
+}
