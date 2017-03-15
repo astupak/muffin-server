@@ -1,6 +1,6 @@
-let User = require('../../models/user');
+const User = require('../../models/user');
 
-module.exports.register = async function(ctx, next) {
+module.exports.create = async function(ctx, next) {
   let user = new User({
     email: ctx.request.body.email,
     displayName: ctx.request.body.displayName,

@@ -13,7 +13,7 @@ passport.use(new LocalStrategy({
       }
 
       if (!user || !user.checkPassword(password)) {
-        return done(null, false, { message: 'Нет такого пользователя или пароль неверен.' });
+        return done(null, false, { message: 'User not found or incorrect password.' });
       }
       
       return done(null, user);

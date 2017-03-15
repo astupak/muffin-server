@@ -3,27 +3,26 @@ const crypto = require('crypto');
 const config = require('config');
 const pick = require('lodash/pick');
 
-
 const userSchema = new mongoose.Schema({
   email: {
     type:       String,
-    required:   'Укажите email', // true for default message
-    unique:     'Такой email уже существует',
-    lowercase:  true, // to compare with another email
+    required:   'Email required',
+    unique:     'Email is already in use',
+    lowercase:  true,
     trim:       true,
-    
+
     validate: [{
       validator: function checkEmail(value) {
         return /^[-.\w]+@([\w-]+\.)+[\w-]{2,12}$/.test(value);
       },
 
-      msg: 'Укажите, пожалуйста, корректный email.'
+      msg: 'Email is not valid'
     }],
   },
 
   displayName: {
     type: String,
-    required: 'Укажите имя',
+    required: 'Name required',
     unique: 'Такое имя уже существует',
     trim: true,
   },
@@ -36,12 +35,18 @@ const userSchema = new mongoose.Schema({
   salt:          {
     required: true,
     type: String
-  }
+  },
+
+  companies: [{
+    type: String,
+    ref: 'Company',
+  }],
+  
 }, {
-  timestamps: true // createdAt, updatedAt
+  timestamps: true
 });
 
-userSchema.statics.publicFields = ['_id', 'email', 'displayName'];
+userSchema.statics.publicFields = ['_id', 'email', 'displayName', 'companies'];
 
 userSchema.virtual('password')
   .set(function(password) {
@@ -76,8 +81,6 @@ userSchema.plugin(schema => {
   schema.options.toObject = {};
 
   schema.options.toObject.transform = (doc, ret) => pick(ret, userSchema.statics.publicFields);
-
 });
-
 
 module.exports = mongoose.model('User', userSchema);

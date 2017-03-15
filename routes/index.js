@@ -1,16 +1,28 @@
 const Router = require('koa-router');
-const { checkToken } = require('./protected/checkToken');
-const { register } = require('./unprotected/join');
-const { login, generateToken } = require('./unprotected/login');
+const { JWTAuth, checkPermissions } = require('./protected/utils');
+const { create: createUser } = require('./unprotected/user');
+const { login, generateToken } = require('./unprotected/utils/login');
+const {
+  create: createCompany,
+  read: readCompany,
+  addMember,
+} = require('./protected/company');
 
 const router = new Router();
 
 //unprotected routes
+router.post('/user', createUser);
 router.post('/login', login, generateToken);
-router.post('/join', register);
 
 //protected routes
-router.get('/frontpage', checkToken, require('./protected/frontpage').get);
-// router.get('/logout', checkToken, require('./protected/logout').get);
+
+//Company
+
+router.post('/company', JWTAuth, createCompany);
+
+router.get('/company/:name', JWTAuth, checkPermissions, readCompany);
+router.post('/company/:name/member', JWTAuth, checkPermissions, addMember);
+
+//
 
 module.exports = router.routes();

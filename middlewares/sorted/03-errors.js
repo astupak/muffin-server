@@ -33,7 +33,7 @@ module.exports = async function(ctx, next) {
           errors: errors
         };
       } else {
-        ctx.body = "Некорректные данные.";
+        ctx.body = 'Invalid Data.';
       }
 
     } else {

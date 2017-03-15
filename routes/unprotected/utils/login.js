@@ -2,7 +2,7 @@ const passport = require('koa-passport');
 const jwt = require('jsonwebtoken');
 const config = require('config');
 
-module.exports.login = async (ctx, next) => passport.authenticate('local', { session: false })(ctx, next);
+module.exports.login = passport.authenticate('local', { session: false });
 
 module.exports.generateToken = async (ctx, next) => {
   let { user } = ctx.passport;
