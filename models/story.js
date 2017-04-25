@@ -20,7 +20,13 @@ const storySchema = new mongoose.Schema({
   company: {
     type: String,
     ref: 'Company',
-  }
+  }, 
+
+  estimation: {
+    type: Number,
+    min: 1,
+    max: 5,
+  },
   
 }, {
   timestamps: true
