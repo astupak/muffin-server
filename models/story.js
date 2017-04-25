@@ -13,7 +13,7 @@ const storySchema = new mongoose.Schema({
   },
 
   tasks: [{
-    type: Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Task',
   }],
 

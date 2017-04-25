@@ -13,13 +13,14 @@ const projectSchema = new mongoose.Schema({
   },
 
   releases: [{
-    type: Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Release',
   }],
 
   company: {
     type: String,
     ref: 'Company',
+    required: true,
   }
   
 }, {

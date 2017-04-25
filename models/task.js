@@ -12,10 +12,10 @@ const taskSchema = new mongoose.Schema({
     trim:       true,
   },
 
-  assignedTo: {
-    type:       String,
-    trim:       true,
-  }
+  assignedTo: [{
+    type: String,
+    ref: 'User',
+  }],
 
   company: {
     type: String,

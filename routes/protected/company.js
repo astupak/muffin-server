@@ -18,7 +18,7 @@ module.exports.create = async function(ctx, next) {
 };
 
 module.exports.read = async function(ctx, next) {
-  const company = await Company.findOne({name : ctx.params.name});
+  const company = await Company.findOne({name : ctx.params.companyName});
 
   ctx.status = 200;
   ctx.body = company;
@@ -27,7 +27,7 @@ module.exports.read = async function(ctx, next) {
 module.exports.addMember = async function(ctx, next) {
   const [user, company] = await Promise.all([
     User.findOne({ displayName: ctx.request.body.name }),
-    Company.findOne({ name : ctx.params.name })
+    Company.findOne({ name : ctx.params.companyName })
   ]);
   
   if (user) {

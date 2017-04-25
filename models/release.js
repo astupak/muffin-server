@@ -13,7 +13,7 @@ const releaseSchema = new mongoose.Schema({
   },
 
   sprints: [{
-    type: Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Sprint',
   }],
 
