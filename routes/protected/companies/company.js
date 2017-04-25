@@ -1,5 +1,5 @@
-const Company = require('../../models/company');
-const User = require('../../models/user');
+const Company = require('../../../models/company');
+const User = require('../../../models/user');
 
 module.exports.create = async function(ctx, next) {
   let company = new Company({
