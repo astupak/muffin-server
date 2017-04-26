@@ -18,6 +18,7 @@ module.exports.create = async function(ctx, next) {
 };
 
 module.exports.read = async function(ctx, next) {
+  console.log(Company);
   const company = await Company.findOne({name : ctx.params.companyName});
 
   ctx.status = 200;
