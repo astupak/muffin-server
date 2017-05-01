@@ -1,12 +1,19 @@
 const Router = require('koa-router');
 const {
-  read: readCompany,
+  read,
+  update,
   addMember,
+  removeMember,
 } = require('./company');
 
 const router = new Router();
 
-router.get('/', readCompany);
+router.get('/', read);
+router.patch('/', update);
+
 router.post('/members', addMember);
+router.delete('/members', removeMember);
+
+
 
 module.exports = router;
