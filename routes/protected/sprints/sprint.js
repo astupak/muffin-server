@@ -7,7 +7,6 @@ module.exports.create = async function(ctx, next) {
   let sprint = new Sprint({
     name: ctx.request.body.name,
     description: ctx.request.body.description,
-    company: ctx.params.companyName
   });
   
   let savedSprint = await sprint.save();

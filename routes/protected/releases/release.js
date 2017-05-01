@@ -7,7 +7,6 @@ module.exports.create = async function(ctx, next) {
   let release = new Release({
     name: ctx.request.body.name,
     description: ctx.request.body.description,
-    company: ctx.params.companyName
   });
   
   let savedRelease = await release.save();

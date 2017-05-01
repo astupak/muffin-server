@@ -4,7 +4,6 @@ module.exports.create = async function(ctx, next) {
   let project = new Project({
     name: ctx.request.body.name,
     description: ctx.request.body.description,
-    company: ctx.params.companyName
   });
   
 
@@ -23,7 +22,7 @@ module.exports.read = async function(ctx, next) {
 
 module.exports.list = async function(ctx, next) {
   const projects = await Project.find({
-    company: ctx.params.companyName
+    
   });
 
   ctx.status = 200;
