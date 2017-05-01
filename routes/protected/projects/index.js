@@ -1,15 +1,18 @@
 const Router = require('koa-router');
 const {
-  create: createProject,
-  read: readProject,
-  list: listProjects,
+  create,
+  read,
+  list,
+  update,
 } = require('./project');
 
 const router = new Router();
 
-router.post('/projects', createProject);
-router.get('/projects', listProjects);
+router.post('/projects', create);
+router.get('/projects', list);
 
-router.get('/projects/:projectId', readProject);
+router.get('/projects/:projectId', read);
+router.patch('/projects/:projectId', update);
+
 
 module.exports = router;

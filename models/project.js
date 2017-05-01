@@ -21,4 +21,7 @@ const projectSchema = new mongoose.Schema({
   timestamps: true
 });
 
+projectSchema.statics.changeableFields = ['name', 'description'];
+
+
 module.exports = mongoose.model('Project', projectSchema);

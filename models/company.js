@@ -9,6 +9,11 @@ const companySchema = new mongoose.Schema({
     trim:       true,
   },
 
+  projects: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Project',
+  }],
+
   members: [{
     type: String,
     ref: 'User',
