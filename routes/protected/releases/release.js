@@ -1,5 +1,6 @@
 const Release = require('../../../models/release');
 const Project = require('../../../models/project');
+const pick = require('lodash/pick');
 
 module.exports.create = async function(ctx, next) {
   const project = await Project.findById(ctx.params.projectId);
@@ -21,6 +22,18 @@ module.exports.create = async function(ctx, next) {
 
 module.exports.read = async function(ctx, next) {
   const release = await Release.findById(ctx.params.releaseId);
+
+  ctx.status = 200;
+  ctx.body = release;
+};
+
+module.exports.update = async function(ctx, next) {
+  let release = await Release.findById(ctx.params.releaseId);
+  const changes = pick(ctx.request.body, Release.changeableFields);
+
+  release = Object.assign(release, changes);
+
+  await release.save();
 
   ctx.status = 200;
   ctx.body = release;

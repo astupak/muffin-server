@@ -1,6 +1,5 @@
 const Project = require('../../../models/project');
 const Company = require('../../../models/company');
-const merge = require('lodash/merge');
 const pick = require('lodash/pick');
 
 module.exports.create = async function(ctx, next) {
@@ -31,9 +30,9 @@ module.exports.read = async function(ctx, next) {
 module.exports.update = async function(ctx, next) {
   let project = await Project.findById(ctx.params.projectId);
   const changes = pick(ctx.request.body, Project.changeableFields);
+
   project = Object.assign(project, changes);
-  // merge(project, changes);
-  console.log(project, changes)
+
   await project.save();
 
   ctx.status = 200;

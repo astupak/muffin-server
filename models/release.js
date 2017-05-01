@@ -21,4 +21,6 @@ const releaseSchema = new mongoose.Schema({
   timestamps: true
 });
 
+releaseSchema.statics.changeableFields = ['name', 'description'];
+
 module.exports = mongoose.model('Release', releaseSchema);
