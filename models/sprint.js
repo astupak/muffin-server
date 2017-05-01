@@ -21,4 +21,6 @@ const sprintSchema = new mongoose.Schema({
   timestamps: true
 });
 
+sprintSchema.statics.changeableFields = ['name', 'description'];
+
 module.exports = mongoose.model('Sprint', sprintSchema);

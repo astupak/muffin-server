@@ -1,5 +1,6 @@
 const Sprint = require('../../../models/sprint');
 const Release = require('../../../models/release');
+const pick = require('lodash/pick');
 
 module.exports.create = async function(ctx, next) {
   const release = await Release.findById(ctx.params.releaseId);
@@ -21,6 +22,18 @@ module.exports.create = async function(ctx, next) {
 
 module.exports.read = async function(ctx, next) {
   const sprint = await Sprint.findById(ctx.params.sprintId);
+
+  ctx.status = 200;
+  ctx.body = sprint;
+};
+
+module.exports.update = async function(ctx, next) {
+  let sprint = await Sprint.findById(ctx.params.sprintId);
+  const changes = pick(ctx.request.body, Sprint.changeableFields);
+
+  sprint = Object.assign(sprint, changes);
+
+  await sprint.save();
 
   ctx.status = 200;
   ctx.body = sprint;

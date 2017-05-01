@@ -1,5 +1,6 @@
 const Story = require('../../../models/story');
 const Task = require('../../../models/task');
+const pick = require('lodash/pick');
 
 module.exports.create = async function(ctx, next) {
   const story = await Story.findById(ctx.params.storyId);
@@ -21,6 +22,18 @@ module.exports.create = async function(ctx, next) {
 
 module.exports.read = async function(ctx, next) {
   const task = await Task.findById(ctx.params.taskId);
+
+  ctx.status = 200;
+  ctx.body = task;
+};
+
+module.exports.update = async function(ctx, next) {
+  let task = await Task.findById(ctx.params.taskId);
+  const changes = pick(ctx.request.body, Task.changeableFields);
+
+  task = Object.assign(task, changes);
+
+  await task.save();
 
   ctx.status = 200;
   ctx.body = task;

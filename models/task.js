@@ -26,4 +26,6 @@ const taskSchema = new mongoose.Schema({
   timestamps: true
 });
 
+taskSchema.statics.changeableFields = ['name', 'description'];
+
 module.exports = mongoose.model('Task', taskSchema);

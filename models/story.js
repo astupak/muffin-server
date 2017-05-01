@@ -27,4 +27,6 @@ const storySchema = new mongoose.Schema({
   timestamps: true
 });
 
+storySchema.statics.changeableFields = ['name', 'description'];
+
 module.exports = mongoose.model('Story', storySchema);

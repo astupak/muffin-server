@@ -1,15 +1,17 @@
 const Router = require('koa-router');
 const {
-  create: createStory,
-  read: readStory,
-  list: listStories,
+  create,
+  read,
+  update,
+  list,
 } = require('./story');
 
 const router = new Router();
 
-router.post('/stories', createStory);
-router.get('/stories', listStories);
+router.post('/stories', create);
+router.get('/stories', list);
 
-router.get('/stories/:storyId', readStory);
+router.get('/stories/:storyId', read);
+router.patch('/stories/:storyId', update);
 
 module.exports = router;

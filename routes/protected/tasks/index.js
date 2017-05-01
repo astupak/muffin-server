@@ -1,15 +1,17 @@
 const Router = require('koa-router');
 const {
-  create: createTask,
-  read: readTask,
-  list: listTasks,
+  create,
+  read,
+  update,
+  list,
 } = require('./task');
 
 const router = new Router();
 
-router.post('/tasks', createTask);
-router.get('/tasks', listTasks);
+router.post('/tasks', create);
+router.get('/tasks', list);
 
-router.get('/tasks/:taskId', readTask);
+router.get('/tasks/:taskId', read);
+router.patch('/tasks/:taskId', update);
 
 module.exports = router;
