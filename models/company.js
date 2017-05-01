@@ -18,6 +18,6 @@ const companySchema = new mongoose.Schema({
   timestamps: true
 });
 
-companySchema.statics.changeableFields = ['name', 'members'];
+companySchema.statics.changeableFields = ['name'];
 
 module.exports = mongoose.model('Company', companySchema);

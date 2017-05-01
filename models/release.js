@@ -16,11 +16,6 @@ const releaseSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Sprint',
   }],
-
-  company: {
-    type: String,
-    ref: 'Company',
-  }
   
 }, {
   timestamps: true

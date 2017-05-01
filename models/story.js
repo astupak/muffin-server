@@ -17,11 +17,6 @@ const storySchema = new mongoose.Schema({
     ref: 'Task',
   }],
 
-  company: {
-    type: String,
-    ref: 'Company',
-  }, 
-
   estimation: {
     type: Number,
     min: 1,

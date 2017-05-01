@@ -17,11 +17,6 @@ const sprintSchema = new mongoose.Schema({
     ref: 'Story',
   }],
 
-  company: {
-    type: String,
-    ref: 'Company',
-  }
-  
 }, {
   timestamps: true
 });

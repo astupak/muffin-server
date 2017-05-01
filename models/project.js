@@ -16,12 +16,6 @@ const projectSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Release',
   }],
-
-  company: {
-    type: String,
-    ref: 'Company',
-    required: true,
-  }
   
 }, {
   timestamps: true
