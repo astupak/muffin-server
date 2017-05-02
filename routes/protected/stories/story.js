@@ -39,6 +39,15 @@ module.exports.update = async function(ctx, next) {
   ctx.body = story;
 };
 
+module.exports.remove = async function(ctx, next) {
+  const story = await Story.findById(ctx.params.storyId);
+  
+  await story.remove();
+
+  ctx.status = 200;
+  ctx.body = story;
+};
+
 module.exports.list = async function(ctx, next) {
   const { stories } = await Sprint.findById(ctx.params.sprintId).populate('stories');
 

@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const Project = require('./project');
+
 
 const companySchema = new mongoose.Schema({
   name: {
@@ -22,6 +24,25 @@ const companySchema = new mongoose.Schema({
 }, {
   timestamps: true
 });
+
+companySchema.pre('remove',async function(next){
+  if (this.projects.length !== 0) {
+    let projects = await Project.find({
+      _id: {
+        $in: this.projects
+      }
+    });
+    
+    let promises = projects.map((el)=> {
+      return el.remove();
+    });
+
+    await Promise.all(promises);
+  }
+
+  next();
+});
+
 
 companySchema.statics.changeableFields = ['name'];
 

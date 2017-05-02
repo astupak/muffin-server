@@ -39,6 +39,16 @@ module.exports.update = async function(ctx, next) {
   ctx.body = release;
 };
 
+module.exports.remove = async function(ctx, next) {
+  const release = await Release.findById(ctx.params.releaseId);
+  
+  await release.remove();
+
+  ctx.status = 200;
+  ctx.body = release;
+};
+
+
 module.exports.list = async function(ctx, next) {
   const { releases } = await Project.findById(ctx.params.projectId).populate('releases');
 

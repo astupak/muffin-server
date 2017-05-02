@@ -39,6 +39,15 @@ module.exports.update = async function(ctx, next) {
   ctx.body = sprint;
 };
 
+module.exports.remove = async function(ctx, next) {
+  const sprint = await Sprint.findById(ctx.params.sprintId);
+  
+  await sprint.remove();
+
+  ctx.status = 200;
+  ctx.body = sprint;
+};
+
 module.exports.list = async function(ctx, next) {
   const { sprints } = await Release.findById(ctx.params.releaseId).populate('sprints');
 

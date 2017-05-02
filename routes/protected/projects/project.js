@@ -39,6 +39,14 @@ module.exports.update = async function(ctx, next) {
   ctx.body = project;
 };
 
+module.exports.remove = async function(ctx, next) {
+  const project = await Project.findById(ctx.params.projectId);
+  
+  await project.remove();
+
+  ctx.status = 200;
+  ctx.body = project;
+};
 
 module.exports.list = async function(ctx, next) {
   const { projects } = await Company.findOne({name: ctx.params.companyName}).populate('projects');

@@ -34,6 +34,27 @@ module.exports.update = async function(ctx, next) {
   }
 };
 
+module.exports.remove = async function(ctx, next) {
+  const company = await Company.findOne({name : ctx.params.companyName});
+  
+  await User.update({
+    displayName: {
+      $in: company.members
+    }
+  }, {
+    $pull: {
+      'companies': company.name
+    }
+  }, {
+    multi: true
+  });
+
+  await company.remove();
+
+  ctx.status = 200;
+  ctx.body = company;
+};
+
 module.exports.addMember = async function(ctx, next) {
   const [user, company] = await Promise.all([
     User.findOne({ displayName: ctx.request.body.name }),
@@ -77,11 +98,6 @@ module.exports.removeMember = async function(ctx, next) {
   
   let savedCompany = await company.save();
   await user.save();
-
-  await Promise.all([
-    company.save(),
-    user.save(),
-  ]);
 
   ctx.status = 200;
   ctx.body = savedCompany;

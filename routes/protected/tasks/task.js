@@ -39,6 +39,15 @@ module.exports.update = async function(ctx, next) {
   ctx.body = task;
 };
 
+module.exports.remove = async function(ctx, next) {
+  const task = await Task.findById(ctx.params.taskId);
+  
+  await task.remove();
+
+  ctx.status = 200;
+  ctx.body = task;
+};
+
 module.exports.list = async function(ctx, next) {
   const { tasks } = await Story.findById(ctx.params.storyId).populate('tasks');
 

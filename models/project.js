@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Release = require('./release');
 
 const projectSchema = new mongoose.Schema({
   name: {
@@ -21,7 +22,24 @@ const projectSchema = new mongoose.Schema({
   timestamps: true
 });
 
-projectSchema.statics.changeableFields = ['name', 'description'];
+projectSchema.pre('remove',async function(next){
+  if (this.releases.length !== 0 ) {
+    let releases = await Release.find({
+      _id: {
+        $in: this.releases
+      }
+    });
+    
+    let promises = releases.map((el)=> {
+      return el.remove();
+    });
 
+    await Promise.all(promises);
+  }
+  
+  next();
+});
+
+projectSchema.statics.changeableFields = ['name', 'description'];
 
 module.exports = mongoose.model('Project', projectSchema);
