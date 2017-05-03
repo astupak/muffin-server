@@ -37,16 +37,12 @@ const userSchema = new mongoose.Schema({
     type: String
   },
 
-  companies: [{
-    type: String,
-    ref: 'Company',
-  }],
   
 }, {
   timestamps: true
 });
 
-userSchema.statics.publicFields = ['_id', 'email', 'displayName', 'companies'];
+userSchema.statics.publicFields = ['_id', 'email', 'displayName'];
 
 userSchema.virtual('password')
   .set(function(password) {

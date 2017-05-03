@@ -12,9 +12,6 @@ module.exports.create = async function(ctx, next) {
 
   let savedCompany = await company.save();
   
-  ctx.passport.user.companies.push(company.name);
-  await ctx.passport.user.save();
-  
   ctx.status = 201;
   ctx.body = savedCompany.toObject();
 };
@@ -37,18 +34,6 @@ module.exports.update = async function(ctx, next) {
 module.exports.remove = async function(ctx, next) {
   const company = await Company.findOne({name : ctx.params.companyName});
   
-  await User.update({
-    displayName: {
-      $in: company.members
-    }
-  }, {
-    $pull: {
-      'companies': company.name
-    }
-  }, {
-    multi: true
-  });
-
   await company.remove();
 
   ctx.status = 200;
@@ -62,15 +47,10 @@ module.exports.addMember = async function(ctx, next) {
   ]);
   
   if (user) {
-    
     if (!company.members.includes(user.displayName)) {
       company.members.push(user.displayName);
-      user.companies.push(company.name);
       
-      await Promise.all([
-        company.save(),
-        user.save(),
-      ]);
+      await company.save();
     }
 
     ctx.status = 200;
@@ -86,18 +66,13 @@ module.exports.removeMember = async function(ctx, next) {
     Company.findOne({ name : ctx.params.companyName })
   ]);
 
-  if (user && company && company.members.includes(user.displayName)) {
+  if (user && company && company.members.includes(user.displayName) && company.members.length !== 0) {
     company.members = without(company.members, user.displayName);
-
-    if (company.members.length === 0) {
-      ctx.throw(501, 'Last member of company');
-    } else {
-      user.companies = without(user.companies, company.name);
-    }
+  } else {
+    ctx.throw(501, 'Last member of company');
   }
   
   let savedCompany = await company.save();
-  await user.save();
 
   ctx.status = 200;
   ctx.body = savedCompany;
@@ -112,16 +87,6 @@ async function rename(ctx, next) {
   company.name = newName;
 
   await company.save();
-
-  await User.update({
-    companies: previousName
-  }, {
-    $set: {
-      'companies.$': newName
-    }
-  }, {
-    multi: true
-  });
 
   ctx.status = 200;
   ctx.body = company;
