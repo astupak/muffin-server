@@ -12,7 +12,10 @@ mongoose.plugin(schema => {
   }
 
   if (schema.options.toObject.transform == undefined) {
-    schema.options.toObject.transform = (doc, ret) => { delete ret.__v; return ret; };
+    schema.options.toObject.transform = (doc, ret) => { 
+      delete ret.__v; 
+      // ret._id = String(ret._id.toString());
+      return ret; };
   }
 
 });

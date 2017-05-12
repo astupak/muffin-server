@@ -5,7 +5,7 @@ const {
   remove,
   addMember,
   removeMember,
-} = require('./company');
+} = require('../modules/company');
 
 const router = new Router();
 
@@ -15,7 +15,5 @@ router.delete('/', remove);
 
 router.post('/members', addMember);
 router.delete('/members', removeMember);
-
-
 
 module.exports = router;

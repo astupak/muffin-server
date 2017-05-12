@@ -1,7 +1,7 @@
 const without = require('lodash/without');
 const pick = require('lodash/pick');
-const Company = require('../../../models/company');
-const User = require('../../../models/user');
+const Company = require('../../models/company');
+const User = require('../../models/user');
 
 module.exports.create = async function(ctx, next) {
   let company = new Company({
@@ -14,6 +14,8 @@ module.exports.create = async function(ctx, next) {
   
   ctx.status = 201;
   ctx.body = savedCompany.toObject();
+
+  return next();
 };
 
 module.exports.read = async function(ctx, next) {
@@ -21,14 +23,18 @@ module.exports.read = async function(ctx, next) {
 
   ctx.status = 200;
   ctx.body = company;
+
+  return next();
 };
 
 module.exports.update = async function(ctx, next) {
   const changes = pick(ctx.request.body, Company.changeableFields);
 
   if (changes.name !== undefined) {
-    await rename(ctx, next);
+    await rename(ctx);
   }
+
+  return next();
 };
 
 module.exports.remove = async function(ctx, next) {
@@ -38,6 +44,37 @@ module.exports.remove = async function(ctx, next) {
 
   ctx.status = 200;
   ctx.body = company;
+
+  return next();
+};
+
+module.exports.addProject = async function(ctx, next) {
+  const company = await Company.findOne({name: ctx.params.companyName});
+
+  company.projects.push(ctx.body._id);
+
+  await company.save();
+
+  return next();
+};
+
+module.exports.removeProject = async function(ctx, next) {
+  const company = await Company.findOne({name: ctx.params.companyName});
+
+  company.projects = without(company.projects, ctx.body._id);
+
+  await company.save();
+
+  return next();
+};
+
+module.exports.getProjects = async function(ctx, next) {
+  const { projects } = await Company.findOne({name: ctx.params.companyName}).populate('projects');
+
+  ctx.status = 200;
+  ctx.body = projects;
+
+  return next();
 };
 
 module.exports.addMember = async function(ctx, next) {
@@ -58,6 +95,8 @@ module.exports.addMember = async function(ctx, next) {
   } else {
     ctx.throw(404, 'User not found');
   }
+
+  return next();
 };
 
 module.exports.removeMember = async function(ctx, next) {
@@ -76,9 +115,11 @@ module.exports.removeMember = async function(ctx, next) {
 
   ctx.status = 200;
   ctx.body = savedCompany;
+
+  return next();
 };
 
-async function rename(ctx, next) {
+async function rename(ctx) {
   const previousName = ctx.params.companyName.toLowerCase();
   const newName = ctx.request.body.name.toLowerCase();
 

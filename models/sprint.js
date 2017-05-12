@@ -13,31 +13,13 @@ const sprintSchema = new mongoose.Schema({
     trim:       true,
   },
 
-  stories: [{
+  backlog: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Story',
   }],
 
 }, {
   timestamps: true
-});
-
-sprintSchema.pre('remove',async function(next){
-  if(this.stories.length !== 0 ) {
-    let stories = await Story.find({
-      _id: {
-        $in: this.stories
-      }
-    });
-    
-    let promises = stories.map((el)=> {
-      return el.remove();
-    });
-
-    await Promise.all(promises);
-  }
-  
-  next();
 });
 
 sprintSchema.statics.changeableFields = ['name', 'description'];

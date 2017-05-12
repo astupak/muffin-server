@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Release = require('./release');
+const Story = require('./story');
 
 const projectSchema = new mongoose.Schema({
   name: {
@@ -18,23 +19,40 @@ const projectSchema = new mongoose.Schema({
     ref: 'Release',
   }],
   
+  backlog: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Story',
+  }],
+  
 }, {
   timestamps: true
 });
 
 projectSchema.pre('remove',async function(next){
-  if (this.releases.length !== 0 ) {
-    let releases = await Release.find({
-      _id: {
-        $in: this.releases
-      }
-    });
-    
-    let promises = releases.map((el)=> {
-      return el.remove();
-    });
+  const dependants = ['releases', 'backlog'];
+  
+  for (let dependant of dependants) {
+    if (this[dependant].length !== 0 ) {
+      let Model;
 
-    await Promise.all(promises);
+      if (dependant === 'releases') {
+        Model = Release;
+      } else {
+        Model = Story;
+      }
+
+      let elems = await Model.find({
+        _id: {
+          $in: this[dependant]
+        }
+      });
+      
+      let promises = releases.map((el)=> {
+        return el.remove();
+      });
+
+      await Promise.all(promises);
+    }
   }
   
   next();

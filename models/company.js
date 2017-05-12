@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const Project = require('./project');
 
-
 const companySchema = new mongoose.Schema({
   name: {
     type:       String,
@@ -42,7 +41,6 @@ companySchema.pre('remove',async function(next){
 
   next();
 });
-
 
 companySchema.statics.changeableFields = ['name'];
 

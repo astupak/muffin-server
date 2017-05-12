@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Sprint = require('./sprint');
+const Story = require('./story');
 
 const releaseSchema = new mongoose.Schema({
   name: {
@@ -16,6 +17,11 @@ const releaseSchema = new mongoose.Schema({
   sprints: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Sprint',
+  }],
+
+  backlog: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Story',
   }],
   
 }, {
