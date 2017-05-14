@@ -1,3 +1,4 @@
+const autoIncrement = require('mongoose-auto-increment');
 const mongoose = require('mongoose');
 const crypto = require('crypto');
 const config = require('config');
@@ -77,6 +78,12 @@ userSchema.plugin(schema => {
   schema.options.toObject = {};
 
   schema.options.toObject.transform = (doc, ret) => pick(ret, userSchema.statics.publicFields);
+});
+
+userSchema.plugin(autoIncrement.plugin, {
+    model: 'User',
+    field: '_id',
+    startAt: 1,
 });
 
 module.exports = mongoose.model('User', userSchema);

@@ -51,7 +51,6 @@ module.exports.remove = async function(ctx, next) {
 };
 
 module.exports.addRelease = async function(ctx, next) {
-  console.log(333);
   const project = await Project.findById(ctx.params.projectId);
 
   project.releases.push(ctx.body._id);
@@ -76,7 +75,7 @@ module.exports.getReleases = async function(ctx, next) {
 
   ctx.status = 200;
   ctx.body = releases;
-  console.log(ctx.body);
+
   return next();
 };
 

@@ -8,7 +8,7 @@ module.exports.create = async function(ctx, next) {
     name: ctx.request.body.name,
   });
   
-  company.members.push(ctx.passport.user.displayName);
+  company.members.push(ctx.passport.user._id);
 
   let savedCompany = await company.save();
   
@@ -19,7 +19,7 @@ module.exports.create = async function(ctx, next) {
 };
 
 module.exports.read = async function(ctx, next) {
-  const company = await Company.findOne({name : ctx.params.companyName});
+  const company = await Company.findById(ctx.params.companyId);
 
   ctx.status = 200;
   ctx.body = company;
@@ -38,7 +38,7 @@ module.exports.update = async function(ctx, next) {
 };
 
 module.exports.remove = async function(ctx, next) {
-  const company = await Company.findOne({name : ctx.params.companyName});
+  const company = await Company.findById(ctx.params.companyId);
   
   await company.remove();
 
@@ -49,7 +49,7 @@ module.exports.remove = async function(ctx, next) {
 };
 
 module.exports.addProject = async function(ctx, next) {
-  const company = await Company.findOne({name: ctx.params.companyName});
+  const company = await Company.findById(ctx.params.companyId);
 
   company.projects.push(ctx.body._id);
 
@@ -59,7 +59,7 @@ module.exports.addProject = async function(ctx, next) {
 };
 
 module.exports.removeProject = async function(ctx, next) {
-  const company = await Company.findOne({name: ctx.params.companyName});
+  const company = await Company.findById(ctx.params.companyId);
 
   company.projects = without(company.projects, ctx.body._id);
 
@@ -69,7 +69,7 @@ module.exports.removeProject = async function(ctx, next) {
 };
 
 module.exports.getProjects = async function(ctx, next) {
-  const { projects } = await Company.findOne({name: ctx.params.companyName}).populate('projects');
+  const { projects } = await Company.findById(ctx.params.companyId).populate('projects');
 
   ctx.status = 200;
   ctx.body = projects;
@@ -79,13 +79,13 @@ module.exports.getProjects = async function(ctx, next) {
 
 module.exports.addMember = async function(ctx, next) {
   const [user, company] = await Promise.all([
-    User.findOne({ displayName: ctx.request.body.name }),
-    Company.findOne({ name : ctx.params.companyName })
+    User.findById(ctx.request.body.id),
+    Company.findById(ctx.params.companyId)
   ]);
   
   if (user) {
-    if (!company.members.includes(user.displayName)) {
-      company.members.push(user.displayName);
+    if (company.members.indexOf(user._id) === -1) {
+      company.members.push(user._id);
       
       await company.save();
     }
@@ -100,13 +100,13 @@ module.exports.addMember = async function(ctx, next) {
 };
 
 module.exports.removeMember = async function(ctx, next) {
-  let [user, company] = await Promise.all([
-    User.findOne({ displayName: ctx.request.body.name }),
-    Company.findOne({ name : ctx.params.companyName })
+  const [user, company] = await Promise.all([
+    User.findById(ctx.request.body.id),
+    Company.findById(ctx.params.companyId)
   ]);
 
-  if (user && company && company.members.includes(user.displayName) && company.members.length !== 0) {
-    company.members = without(company.members, user.displayName);
+  if (user && company.members.indexOf(user._id) !== -1 && company.members.length !== 0) {
+    company.members = without(company.members, user._id);
   } else {
     ctx.throw(501, 'Last member of company');
   }
@@ -123,7 +123,7 @@ async function rename(ctx) {
   const previousName = ctx.params.companyName.toLowerCase();
   const newName = ctx.request.body.name.toLowerCase();
 
-  let company = await Company.findOne({ name : previousName });
+  let company = await Company.findById(ctx.params.companyId);
 
   company.name = newName;
 

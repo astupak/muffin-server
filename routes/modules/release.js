@@ -113,6 +113,16 @@ module.exports.removeStory = async function(ctx, next) {
   return next();
 };
 
+module.exports.getStory = async function(ctx, next) {
+  const release = await Release.findById(ctx.params.releaseId);
+
+  if (release.backlog.indexOf())
+  ctx.status = 200;
+  ctx.body = backlog;
+
+  return next();
+};
+
 module.exports.getBacklog = async function(ctx, next) {
   const { backlog } = await Release.findById(ctx.params.releaseId).populate('backlog');
 

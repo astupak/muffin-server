@@ -1,3 +1,4 @@
+const autoIncrement = require('mongoose-auto-increment');
 const mongoose = require('mongoose');
 const Sprint = require('./sprint');
 const Story = require('./story');
@@ -15,12 +16,12 @@ const releaseSchema = new mongoose.Schema({
   },
 
   sprints: [{
-    type: mongoose.Schema.Types.ObjectId,
+    type: Number,
     ref: 'Sprint',
   }],
 
   backlog: [{
-    type: mongoose.Schema.Types.ObjectId,
+    type: Number,
     ref: 'Story',
   }],
   
@@ -47,5 +48,11 @@ releaseSchema.pre('remove',async function(next){
 });
 
 releaseSchema.statics.changeableFields = ['name', 'description'];
+
+releaseSchema.plugin(autoIncrement.plugin, {
+    model: 'Release',
+    field: '_id',
+    startAt: 1,
+});
 
 module.exports = mongoose.model('Release', releaseSchema);

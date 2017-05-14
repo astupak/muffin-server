@@ -36,16 +36,12 @@ projectBacklogRouter.delete('/backlog/:storyId', remove, removeStoryFromProject,
 releaseBacklogRouter.put('/backlog', read, addStoryToRelease);
 releaseBacklogRouter.get('/backlog', getReleaseBacklog);
 
-releaseBacklogRouter.get('/backlog/:storyId', read);
-releaseBacklogRouter.patch('/backlog/:storyId', update);
 releaseBacklogRouter.delete('/backlog/:storyId', read, removeStoryFromRelease, removeStoryFromSprint);
 
 
 sprintBacklogRouter.put('/backlog', read, addStoryToRelease, addStoryToSprint);
 sprintBacklogRouter.get('/backlog', getSprintBacklog);
 
-sprintBacklogRouter.get('/backlog/:storyId', read);
-sprintBacklogRouter.patch('/backlog/:storyId', update);
 sprintBacklogRouter.delete('/backlog/:storyId', read, removeStoryFromSprint);
 
 module.exports = {

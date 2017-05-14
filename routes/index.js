@@ -32,6 +32,6 @@ projectsRouter.use('/projects/:projectId', projectBacklogRouter.routes());
 
 companiesRouter.use(projectsRouter.routes());
 
-router.use('/companies/:companyName', JWTAuth, checkPermissions, companiesRouter.routes());
+router.use('/companies/:companyId', JWTAuth, checkPermissions, companiesRouter.routes());
 
 module.exports = router.routes();

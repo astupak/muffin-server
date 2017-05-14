@@ -4,10 +4,9 @@ module.exports.create = async function(ctx, next) {
   let user = new User({
     email: ctx.request.body.email,
     displayName: ctx.request.body.displayName,
+    password: ctx.request.body.password,
   });
   
-  user.password = ctx.request.body.password;
-
   let savedUser = await user.save();
 
   ctx.status = 201;
