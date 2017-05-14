@@ -1,23 +1,35 @@
 const Router = require('koa-router');
 const {
-  addSprint: addSprintToRelease,
-  removeSprint: removeSprintFromRelease,
-  getSprints,
+  addSprint: addToProject,
+  removeSprint: removeFromProject,
+  getSprints: getProjectSprints,
+} = require('../modules/project');
+const {
+  addSprint: addToRelease,
+  removeSprint: removeFromRelease,
+  getSprints: getReleaseSprints,
 } = require('../modules/release');
 const {
   create,
-  read,
+  read: getSprint,
   update,
   remove,
 } = require('../modules/sprint');
 
-const router = new Router();
+const sprintsRouter = new Router();
+const releaseSprintRouter = new Router();
 
-router.post('/sprints', create, addSprintToRelease);
-router.get('/sprints', getSprints);
+sprintsRouter.post('/sprints', create, addToProject);
+sprintsRouter.get('/sprints', getProjectSprints);
+sprintsRouter.get('/sprints/:sprintId', getSprint);
+sprintsRouter.patch('/sprints/:sprintId', update);
+sprintsRouter.delete('/sprints/:sprintId', remove, removeFromProject, removeFromRelease);
 
-router.get('/sprints/:sprintId', read);
-router.patch('/sprints/:sprintId', update);
-router.delete('/sprints/:sprintId', remove, removeSprintFromRelease);
+releaseSprintRouter.put('/sprints', getSprint, addToRelease);
+releaseSprintRouter.get('/sprints', getReleaseSprints);
+releaseSprintRouter.delete('/sprints/:sprintId', getSprint, removeFromRelease);
 
-module.exports = router;
+module.exports = {
+  sprintsRouter,
+  releaseSprintRouter
+};

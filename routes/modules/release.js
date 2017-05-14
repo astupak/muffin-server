@@ -71,11 +71,17 @@ module.exports.removeSprint = async function(ctx, next) {
   return next();
 };
 
-module.exports.getSprints = async function(ctx, next) {
-  const { sprints } = await Release.findById(ctx.params.releaseId).populate('sprints');
+module.exports.getSprints = async function(ctx, next) {  
+  let release;
+
+  if (ctx.request.body.populated) {
+    release = await Release.findById(ctx.params.releaseId).populate('sprints');
+  } else {
+    release = await Release.findById(ctx.params.releaseId);
+  }
 
   ctx.status = 200;
-  ctx.body = sprints;
+  ctx.body = release.sprints;
 
   return next();
 };
@@ -96,10 +102,13 @@ module.exports.removeStory = async function(ctx, next) {
   let release;
 
   if (ctx.params.releaseId) {
-    release = await Release.findById(ctx.params.releaseId);
-    release.backlog = without(release.backlog, ctx.body._id);
-
-    await release.save();
+     await Release.update({
+      _id: ctx.params.releaseId
+    }, {
+      $pull : {
+        backlog: ctx.body._id
+      }
+    });
   } else {
     await Release.update({
       backlog: ctx.body._id
@@ -113,21 +122,17 @@ module.exports.removeStory = async function(ctx, next) {
   return next();
 };
 
-module.exports.getStory = async function(ctx, next) {
-  const release = await Release.findById(ctx.params.releaseId);
-
-  if (release.backlog.indexOf())
-  ctx.status = 200;
-  ctx.body = backlog;
-
-  return next();
-};
-
 module.exports.getBacklog = async function(ctx, next) {
-  const { backlog } = await Release.findById(ctx.params.releaseId).populate('backlog');
+  let release;
+
+  if (ctx.request.body.populated) {
+    release = await Release.findById(ctx.params.releaseId).populate('backlog');
+  } else {
+    release = await Release.findById(ctx.params.releaseId);
+  }
 
   ctx.status = 200;
-  ctx.body = backlog;
+  ctx.body = release.backlog;
 
   return next();
 };

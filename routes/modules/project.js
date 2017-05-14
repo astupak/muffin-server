@@ -41,13 +41,18 @@ module.exports.update = async function(ctx, next) {
 
 module.exports.remove = async function(ctx, next) {
   const project = await Project.findById(ctx.params.projectId);
+
+  if (project) {
+    await project.remove();
+
+    ctx.status = 200;
+    ctx.body = project;
+
+    return next();
+  } else {
+    ctx.throw(404);
+  }
   
-  await project.remove();
-
-  ctx.status = 200;
-  ctx.body = project;
-
-  return next();
 };
 
 module.exports.addRelease = async function(ctx, next) {
@@ -79,6 +84,34 @@ module.exports.getReleases = async function(ctx, next) {
   return next();
 };
 
+module.exports.addSprint = async function(ctx, next) {
+  const project = await Project.findById(ctx.params.projectId);
+
+  project.sprints.push(ctx.body._id);
+
+  await project.save();
+
+  return next();
+};
+
+module.exports.removeSprint = async function(ctx, next) {
+  const project = await Project.findById(ctx.params.projectId);
+
+  project.sprints = without(project.sprints, ctx.body._id);
+
+  await project.save();
+
+  return next();
+};
+
+module.exports.getSprints = async function(ctx, next) {
+  const { sprints } = await Project.findById(ctx.params.projectId).populate('sprints');
+
+  ctx.status = 200;
+  ctx.body = sprints;
+
+  return next();
+};
 module.exports.addStory = async function(ctx, next) {
   const project = await Project.findById(ctx.params.projectId);
 

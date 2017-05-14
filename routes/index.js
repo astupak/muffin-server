@@ -2,7 +2,10 @@ const Router = require('koa-router');
 const companiesRouter = require('./protected/companies');
 const projectsRouter = require('./protected/projects');
 const releasesRouter = require('./protected/releases');
-const sprintsRouter = require('./protected/sprints');
+const {
+  sprintsRouter,
+  releaseSprintRouter
+} = require('./protected/sprints');
 const {
   projectBacklogRouter,
   releaseBacklogRouter,
@@ -24,9 +27,10 @@ router.post('/companies', JWTAuth, createCompany);
 
 sprintsRouter.use('/sprints/:sprintId', sprintBacklogRouter.routes());
 
-releasesRouter.use('/releases/:releaseId', sprintsRouter.routes());
 releasesRouter.use('/releases/:releaseId', releaseBacklogRouter.routes());
+releasesRouter.use('/releases/:releaseId', releaseSprintRouter.routes());
 
+projectsRouter.use('/projects/:projectId', sprintsRouter.routes());
 projectsRouter.use('/projects/:projectId', releasesRouter.routes());
 projectsRouter.use('/projects/:projectId', projectBacklogRouter.routes());
 

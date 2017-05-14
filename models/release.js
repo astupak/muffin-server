@@ -29,24 +29,6 @@ const releaseSchema = new mongoose.Schema({
   timestamps: true
 });
 
-releaseSchema.pre('remove',async function(next){
-  if(this.sprints.length !== 0 ) {
-    let sprints = await Sprint.find({
-      _id: {
-        $in: this.sprints
-      }
-    });
-    
-    let promises = sprints.map((el)=> {
-      return el.remove();
-    });
-
-    await Promise.all(promises);
-  }
-  
-  next();
-});
-
 releaseSchema.statics.changeableFields = ['name', 'description'];
 
 releaseSchema.plugin(autoIncrement.plugin, {

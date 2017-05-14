@@ -24,7 +24,7 @@ module.exports.read = async function(ctx, next) {
   }
 
   const story = await Story.findById(id);
-  console.log(story);
+  
   ctx.status = 200;
   ctx.body = story;
 

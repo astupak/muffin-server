@@ -1,6 +1,7 @@
 const autoIncrement = require('mongoose-auto-increment');
 const mongoose = require('mongoose');
 const Release = require('./release');
+const Sprint = require('./release');
 const Story = require('./story');
 
 const projectSchema = new mongoose.Schema({
@@ -19,6 +20,11 @@ const projectSchema = new mongoose.Schema({
     type: Number,
     ref: 'Release',
   }],
+
+  sprints: [{
+    type: Number,
+    ref: 'Sprint',
+  }],
   
   backlog: [{
     type: Number,
@@ -30,16 +36,21 @@ const projectSchema = new mongoose.Schema({
 });
 
 projectSchema.pre('remove',async function(next){
-  const dependants = ['releases', 'backlog'];
+  const dependants = ['releases', 'sprints', 'backlog'];
   
   for (let dependant of dependants) {
     if (this[dependant].length !== 0 ) {
       let Model;
-
-      if (dependant === 'releases') {
-        Model = Release;
-      } else {
-        Model = Story;
+      switch (dependant) {
+        case 'releases':
+          Model = Release;
+          break;
+        case 'sprints':
+          Model = Sprint;
+          break;
+        case 'backlog':
+          Model = Story;
+          break;
       }
 
       let elems = await Model.find({
@@ -48,7 +59,7 @@ projectSchema.pre('remove',async function(next){
         }
       });
       
-      let promises = releases.map((el)=> {
+      let promises = elems.map((el)=> {
         return el.remove();
       });
 

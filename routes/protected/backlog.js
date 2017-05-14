@@ -1,22 +1,22 @@
 const Router = require('koa-router');
 const { 
-  addStory: addStoryToProject,
-  removeStory: removeStoryFromProject,
+  addStory: addToProject,
+  removeStory: removeFromProject,
   getBacklog: getProjectBacklog
 } = require('../modules/project');
 const { 
-  addStory: addStoryToRelease,
-  removeStory: removeStoryFromRelease,
+  addStory: addToRelease,
+  removeStory: removeFromRelease,
   getBacklog: getReleaseBacklog
 } = require('../modules/release');
 const { 
-  addStory: addStoryToSprint,
-  removeStory: removeStoryFromSprint,
+  addStory: addToSprint,
+  removeStory: removeFromSprint,
   getBacklog: getSprintBacklog
 } = require('../modules/sprint');
 const {
   create,
-  read,
+  read: getStory,
   update,
   remove,
 } = require('../modules/story');
@@ -25,24 +25,19 @@ const projectBacklogRouter = new Router();
 const releaseBacklogRouter = new Router();
 const sprintBacklogRouter = new Router();
 
-projectBacklogRouter.post('/backlog', create, addStoryToProject);
+projectBacklogRouter.post('/backlog', create, addToProject);
 projectBacklogRouter.get('/backlog', getProjectBacklog);
-
-projectBacklogRouter.get('/backlog/:storyId', read);
+projectBacklogRouter.get('/backlog/:storyId', getStory);
 projectBacklogRouter.patch('/backlog/:storyId', update);
-projectBacklogRouter.delete('/backlog/:storyId', remove, removeStoryFromProject, removeStoryFromRelease, removeStoryFromSprint);
+projectBacklogRouter.delete('/backlog/:storyId', remove, removeFromProject, removeFromRelease, removeFromSprint);
 
-
-releaseBacklogRouter.put('/backlog', read, addStoryToRelease);
+releaseBacklogRouter.put('/backlog', getStory, addToRelease);
 releaseBacklogRouter.get('/backlog', getReleaseBacklog);
+releaseBacklogRouter.delete('/backlog/:storyId', getStory, removeFromRelease);
 
-releaseBacklogRouter.delete('/backlog/:storyId', read, removeStoryFromRelease, removeStoryFromSprint);
-
-
-sprintBacklogRouter.put('/backlog', read, addStoryToRelease, addStoryToSprint);
+sprintBacklogRouter.put('/backlog', getStory, addToSprint);
 sprintBacklogRouter.get('/backlog', getSprintBacklog);
-
-sprintBacklogRouter.delete('/backlog/:storyId', read, removeStoryFromSprint);
+sprintBacklogRouter.delete('/backlog/:storyId', getStory, removeFromSprint);
 
 module.exports = {
   projectBacklogRouter,

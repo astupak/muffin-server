@@ -17,7 +17,13 @@ module.exports.create = async function(ctx, next) {
 };
 
 module.exports.read = async function(ctx, next) {
-  const sprint = await Sprint.findById(ctx.params.sprintId);
+  const id = ctx.params.sprintId || ctx.request.body.id;
+
+  if (!id) {
+    ctx.throw(400);
+  }
+
+  const sprint = await Sprint.findById(id);
 
   ctx.status = 200;
   ctx.body = sprint;
@@ -63,13 +69,19 @@ module.exports.addStory = async function(ctx, next) {
 };
 
 module.exports.removeStory = async function(ctx, next) {
-  const sprint = await Sprint.findById(ctx.params.sprintId);
+  let sprint;
 
   if (ctx.params.sprintId) {
-    sprint = await Sprint.findById(ctx.params.sprintId);
-    sprint.backlog = without(sprint.backlog, ctx.body._id);
+    await Sprint.update({
+      _id: ctx.params.sprintId
+    }, {
+      $pull : {
+        backlog: ctx.body._id
+      }
+    });
 
-    await sprint.save();
+    ctx.status = 200;
+    ctx.body = sprint;
   } else {
     await Sprint.update({
       backlog: ctx.body._id
@@ -84,10 +96,15 @@ module.exports.removeStory = async function(ctx, next) {
 };
 
 module.exports.getBacklog = async function(ctx, next) {
-  const { backlog } = await Sprint.findById(ctx.params.sprintId).populate('backlog');
+  let sprint;
 
+  if (ctx.request.body.populated) {
+    sprint = await Sprint.findById(ctx.params.sprintId).populate('backlog');
+  } else {
+    sprint = await Sprint.findById(ctx.params.sprintId);
+  }
   ctx.status = 200;
-  ctx.body = backlog;
+  ctx.body = sprint.backlog;
 
   return next();
 };
