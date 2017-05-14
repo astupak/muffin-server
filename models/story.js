@@ -1,3 +1,4 @@
+const autoIncrement = require('mongoose-auto-increment');
 const mongoose = require('mongoose');
 const Task = require('./task');
 
@@ -14,7 +15,7 @@ const storySchema = new mongoose.Schema({
   },
 
   tasks: [{
-    type: mongoose.Schema.Types.ObjectId,
+    type: Number,
     ref: 'Task',
   }],
 
@@ -47,5 +48,11 @@ storySchema.pre('remove',async function(next){
 });
 
 storySchema.statics.changeableFields = ['name', 'description'];
+
+storySchema.plugin(autoIncrement.plugin, {
+    model: 'Story',
+    field: '_id',
+    startAt: 1,
+});
 
 module.exports = mongoose.model('Story', storySchema);

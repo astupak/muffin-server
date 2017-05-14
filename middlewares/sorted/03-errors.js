@@ -35,7 +35,7 @@ module.exports = async function(ctx, next) {
       } else {
         ctx.body = 'Invalid Data.';
       }
-    } else if (e.name == 'CastError' && e.kind == 'ObjectId') {
+    } else if (e.name == 'CastError' && e.kind == 'number') {
       ctx.status = 404;
       ctx.body = 'Not Found'
     } else {

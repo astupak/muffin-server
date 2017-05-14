@@ -1,3 +1,4 @@
+const autoIncrement = require('mongoose-auto-increment');
 const mongoose = require('mongoose');
 const Project = require('./project');
 
@@ -11,12 +12,12 @@ const companySchema = new mongoose.Schema({
   },
 
   projects: [{
-    type: mongoose.Schema.Types.ObjectId,
+    type: Number,
     ref: 'Project',
   }],
 
   members: [{
-    type: String,
+    type: Number,
     ref: 'User',
   }],
   
@@ -43,5 +44,11 @@ companySchema.pre('remove',async function(next){
 });
 
 companySchema.statics.changeableFields = ['name'];
+
+companySchema.plugin(autoIncrement.plugin, {
+    model: 'Company',
+    field: '_id',
+    startAt: 1,
+});
 
 module.exports = mongoose.model('Company', companySchema);
