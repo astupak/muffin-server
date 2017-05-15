@@ -13,7 +13,7 @@ router.get('/', read);
 router.patch('/', update);
 router.delete('/', remove);
 
-router.post('/members', addMember);
+router.put('/members', addMember);
 router.delete('/members', removeMember);
 
 module.exports = router;

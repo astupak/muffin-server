@@ -120,7 +120,6 @@ module.exports.removeMember = async function(ctx, next) {
 };
 
 async function rename(ctx) {
-  const previousName = ctx.params.companyName.toLowerCase();
   const newName = ctx.request.body.name.toLowerCase();
 
   let company = await Company.findById(ctx.params.companyId);

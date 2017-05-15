@@ -1,6 +1,5 @@
 const autoIncrement = require('mongoose-auto-increment');
 const mongoose = require('mongoose');
-const Story = require('./story');
 
 const sprintSchema = new mongoose.Schema({
   name: {

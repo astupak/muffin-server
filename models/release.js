@@ -1,7 +1,5 @@
 const autoIncrement = require('mongoose-auto-increment');
 const mongoose = require('mongoose');
-const Sprint = require('./sprint');
-const Story = require('./story');
 
 const releaseSchema = new mongoose.Schema({
   name: {
