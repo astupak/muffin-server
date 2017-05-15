@@ -2,6 +2,7 @@ const autoIncrement = require('mongoose-auto-increment');
 const mongoose = require('mongoose');
 const Release = require('./release');
 const Sprint = require('./sprint');
+const Board = require('./board');
 const Story = require('./story');
 
 const projectSchema = new mongoose.Schema({
@@ -30,13 +31,18 @@ const projectSchema = new mongoose.Schema({
     type: Number,
     ref: 'Story',
   }],
+
+  boards: [{
+    type: Number,
+    ref: 'Board',
+  }],
   
 }, {
   timestamps: true
 });
 
 projectSchema.pre('remove',async function(next){
-  const dependants = ['releases', 'sprints', 'backlog'];
+  const dependants = ['releases', 'sprints', 'backlog', 'boards'];
   
   for (let dependant of dependants) {
     if (this[dependant].length !== 0 ) {
@@ -50,6 +56,9 @@ projectSchema.pre('remove',async function(next){
           break;
         case 'backlog':
           Model = Story;
+          break;
+        case 'boards':
+          Model = Board;
           break;
       }
 
