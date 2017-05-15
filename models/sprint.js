@@ -1,5 +1,5 @@
+const autoIncrement = require('mongoose-auto-increment');
 const mongoose = require('mongoose');
-const Story = require('./story');
 
 const sprintSchema = new mongoose.Schema({
   name: {
@@ -13,8 +13,8 @@ const sprintSchema = new mongoose.Schema({
     trim:       true,
   },
 
-  stories: [{
-    type: mongoose.Schema.Types.ObjectId,
+  backlog: [{
+    type: Number,
     ref: 'Story',
   }],
 
@@ -22,24 +22,12 @@ const sprintSchema = new mongoose.Schema({
   timestamps: true
 });
 
-sprintSchema.pre('remove',async function(next){
-  if(this.stories.length !== 0 ) {
-    let stories = await Story.find({
-      _id: {
-        $in: this.stories
-      }
-    });
-    
-    let promises = stories.map((el)=> {
-      return el.remove();
-    });
-
-    await Promise.all(promises);
-  }
-  
-  next();
-});
-
 sprintSchema.statics.changeableFields = ['name', 'description'];
+
+sprintSchema.plugin(autoIncrement.plugin, {
+    model: 'Sprint',
+    field: '_id',
+    startAt: 1,
+});
 
 module.exports = mongoose.model('Sprint', sprintSchema);

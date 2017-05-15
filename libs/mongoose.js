@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const beautifyUnique = require('mongoose-beautiful-unique-validation');
+const autoIncrement = require('mongoose-auto-increment');
 const config = require('config');
 
 mongoose.Promise = Promise;
@@ -12,7 +13,10 @@ mongoose.plugin(schema => {
   }
 
   if (schema.options.toObject.transform == undefined) {
-    schema.options.toObject.transform = (doc, ret) => { delete ret.__v; return ret; };
+    schema.options.toObject.transform = (doc, ret) => { 
+      delete ret.__v; 
+      // ret._id = String(ret._id.toString());
+      return ret; };
   }
 
 });
@@ -20,3 +24,5 @@ mongoose.plugin(schema => {
 mongoose.set('debug', true);
 
 mongoose.connect(config.mongoose.uri, config.mongoose.options);
+
+autoIncrement.initialize(mongoose.connection);
