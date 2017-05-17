@@ -1,4 +1,5 @@
 const autoIncrement = require('mongoose-auto-increment');
+const without = require('lodash/without');
 const mongoose = require('mongoose');
 const Release = require('./release');
 const Sprint = require('./sprint');
@@ -32,7 +33,7 @@ const projectSchema = new mongoose.Schema({
     ref: 'Story',
   }],
 
-  boards: [{
+  boardsList: [{
     type: Number,
     ref: 'Board',
   }],
@@ -42,7 +43,7 @@ const projectSchema = new mongoose.Schema({
 });
 
 projectSchema.pre('remove',async function(next){
-  const dependants = ['releases', 'sprints', 'backlog', 'boards'];
+  const dependants = ['releases', 'sprints', 'backlog', 'boardsList'];
   
   for (let dependant of dependants) {
     if (this[dependant].length !== 0 ) {
@@ -57,7 +58,7 @@ projectSchema.pre('remove',async function(next){
         case 'backlog':
           Model = Story;
           break;
-        case 'boards':
+        case 'boardsList':
           Model = Board;
           break;
       }
@@ -78,6 +79,24 @@ projectSchema.pre('remove',async function(next){
   
   next();
 });
+
+projectSchema.methods.boards = {
+  add(boardId) {
+    this.boardsList.push(boardId);
+
+    return this.boards;
+  },
+
+  remove(boardId) {
+    this.boardsList = without(this.boardsList, boardId);
+
+    return this.boards;
+  },
+
+  list() {
+    return this.populate('boardsList').execPopulate();
+  }
+}
 
 projectSchema.statics.changeableFields = ['name', 'description'];
 

@@ -16,12 +16,20 @@ const cardSchema = new mongoose.Schema({
   timestamps: true
 });
 
-cardSchema.statics.changeableFields = ['name', 'info'];
+cardSchema.statics.changeableFields = ['info'];
 
 cardSchema.plugin(autoIncrement.plugin, {
     model: 'Card',
     field: '_id',
     startAt: 1,
 });
+
+cardSchema.methods.update = function(props) {
+  for (let prop in props) {
+    this[prop] = props[prop];
+  }
+
+  return this;
+}
 
 module.exports = mongoose.model('Card', cardSchema);

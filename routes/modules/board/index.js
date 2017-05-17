@@ -1,29 +1,34 @@
-const Sprint = require('../sprint');
-const Board = require('./board');
-const Row = require('./row');
+const SprintModel = require('../../../models/sprint');
+const BoardModel = require('../../../models/board');
+const BoardModule = require('./board');
+const ColumnModule = require('./column');
+const RowModule = require('./row');
 
-module.exports.create = Board.create;
-module.exports.read = Board.read;
-module.exports.update = Board.update;
-module.exports.remove = Board.remove;
+module.exports.create = BoardModule.create;
+module.exports.get = BoardModule.get;
+module.exports.update = BoardModule.update;
+module.exports.remove = BoardModule.remove;
 
-module.exports.assignSprint = async function(ctx, next) {
-  const sprint = await Sprint.findById(ctx.request.body.id);
-  let board = await Board.findById(ctx.params.boardId);
+// module.exports.column = ColumnModule;
 
-  if (!sprint) {
-    ctx.throw(404, 'Sprint not found');
-  }
+// module.exports.assignSprint = async function(ctx, next) {
+//   const sprint = await SprintModel.findById(ctx.request.body.id);
+//   let board = await BoardModel.findById(ctx.params.boardId);
 
-  if (board.sprint) {
-    //board.rows.remove();
-  }
+//   board.sprint = sprint._id;
 
-  ctx.sprint = sprint;
+//   if (board.rows.length) {
+//     await RowModule.remove(board.rows);
+//   }
 
-  board.sprint = sprint._id;
+//   board.rows = await RowModule.create(sprint.backlog);
 
-  return next();
-}
+//   await board.save();
+
+//   ctx.status = 200;
+//   ctx.body = board;
+
+//   return next();
+// }
 
 

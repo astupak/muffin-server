@@ -1,4 +1,5 @@
 const autoIncrement = require('mongoose-auto-increment');
+const without = require('lodash/without');
 const mongoose = require('mongoose');
 
 const columnSchema = new mongoose.Schema({
@@ -24,5 +25,6 @@ columnSchema.plugin(autoIncrement.plugin, {
     field: '_id',
     startAt: 1,
 });
+
 
 module.exports = mongoose.model('Column', columnSchema);

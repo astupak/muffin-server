@@ -141,32 +141,3 @@ module.exports.getBacklog = async function(ctx, next) {
 
   return next();
 };
-
-module.exports.addBoard = async function(ctx, next) {
-  const project = await Project.findById(ctx.params.projectId);
-
-  project.boards.push(ctx.body._id);
-
-  await project.save();
-
-  return next();
-};
-
-module.exports.removeBoard = async function(ctx, next) {
-  const project = await Project.findById(ctx.params.projectId);
-
-  project.boards = without(project.boards, ctx.body._id);
-
-  await project.save();
-
-  return next();
-};
-
-module.exports.getBoards = async function(ctx, next) {
-  const { boards } = await Project.findById(ctx.params.projectId).populate('boards');
-
-  ctx.status = 200;
-  ctx.body = boards;
-
-  return next();
-};
