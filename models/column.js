@@ -9,7 +9,7 @@ const columnSchema = new mongoose.Schema({
     trim:       true,
   },
 
-  cards: [{
+  cardsList: [{
     type: Number,
     ref: 'Card',
   }],
@@ -19,6 +19,25 @@ const columnSchema = new mongoose.Schema({
 });
 
 columnSchema.statics.changeableFields = ['name'];
+
+columnSchema.methods.cards = {
+  add(cardsIds) {
+    this.cardsList = this.cardsList.concat(cardsIds);
+
+    return this.cards;
+  },
+
+  remove(cardsIds) {
+    this.cardsList = without(this.cardsList, ...[].concat(cardsIds));
+
+    return this.cards;
+  },
+
+  list() {
+    return this.populate('cardsList').execPopulate();
+  }
+
+}
 
 columnSchema.plugin(autoIncrement.plugin, {
     model: 'Column',
