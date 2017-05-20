@@ -16,7 +16,7 @@ const companySchema = new mongoose.Schema({
     ref: 'Project',
   }],
 
-  members: [{
+  membersList: [{
     type: Number,
     ref: 'User',
   }],
@@ -50,5 +50,26 @@ companySchema.plugin(autoIncrement.plugin, {
     field: '_id',
     startAt: 1,
 });
+
+companySchema.methods.update = function(props) {
+  for (let prop in props) {
+    this[prop] = props[prop];
+  }
+
+  return this;
+}
+
+companySchema.methods.members = {
+  add(usersIds) {
+    this.membersList = this.membersList.concat(usersIds);
+
+    return this.members;
+  },
+  remove(usersIds) {
+    this.membersList = without(this.membersList, ...[].concat(usersIds));
+
+    return this.rows;
+  }
+}
 
 module.exports = mongoose.model('Company', companySchema);

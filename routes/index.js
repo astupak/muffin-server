@@ -3,6 +3,10 @@ const companiesRouter = require('./protected/companies');
 const projectsRouter = require('./protected/projects');
 const releasesRouter = require('./protected/releases');
 const boardsRouter = require('./protected/boards');
+const rowsRouter = require('./protected/rows');
+const columnsRouter = require('./protected/columns');
+const cardsRouter = require('./protected/cards');
+
 const {
   sprintsRouter,
   releaseSprintRouter
@@ -25,6 +29,11 @@ router.post('/user', createUser);
 router.post('/login', login, generateToken);
 
 router.post('/companies', JWTAuth, createCompany);
+
+rowsRouter.use('/rows/:rowId', cardsRouter.routes());
+
+boardsRouter.use('/boards/:boardId', rowsRouter.routes());
+boardsRouter.use('/boards/:boardId', columnsRouter.routes());
 
 sprintsRouter.use('/sprints/:sprintId', sprintBacklogRouter.routes());
 

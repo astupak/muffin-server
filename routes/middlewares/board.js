@@ -5,9 +5,7 @@ const Projects = require('../modules/newProjects');
 const Sprints = require('../modules/newSprints');
 
 module.exports.create = async function (ctx, next) {
-  const board = await Boards.create({
-    name: ctx.request.body.name
-  });
+  const board = await Boards.create(ctx.request.body.name);
   
   let project = await Projects.get(ctx.params.projectId);
 

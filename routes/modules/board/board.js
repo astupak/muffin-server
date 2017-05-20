@@ -1,7 +1,9 @@
 const Board = require('../../../models/board');
 
-module.exports.create = async function(props) {
-  let board = new Board(props);
+module.exports.create = async function(name) {
+  let board = new Board({
+    name,
+  });
   
   let savedBoard = await board.save();
 

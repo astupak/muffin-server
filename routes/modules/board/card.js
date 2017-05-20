@@ -18,7 +18,7 @@ module.exports.get = async function(id) {
 
 module.exports.remove = async function(id) {
   const card = await Card.findById(id);
-  console.log(card);
+
   await card.remove();
 
   return card;
