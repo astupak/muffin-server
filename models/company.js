@@ -11,7 +11,7 @@ const companySchema = new mongoose.Schema({
     trim:       true,
   },
 
-  projects: [{
+  projectsList: [{
     type: Number,
     ref: 'Project',
   }],
@@ -26,14 +26,14 @@ const companySchema = new mongoose.Schema({
 });
 
 companySchema.pre('remove',async function(next){
-  if (this.projects.length !== 0) {
-    let projects = await Project.find({
+  if (this.projectsList.length !== 0) {
+    let projectsList = await Project.find({
       _id: {
-        $in: this.projects
+        $in: this.projectsList
       }
     });
     
-    let promises = projects.map((el)=> {
+    let promises = projectsList.map((el)=> {
       return el.remove();
     });
 
@@ -60,16 +60,37 @@ companySchema.methods.update = function(props) {
 }
 
 companySchema.methods.members = {
-  add(usersIds) {
-    this.membersList = this.membersList.concat(usersIds);
+  add(userId) {
+    if (this.membersList.indexOf(userId) === -1) {
+      this.membersList = this.membersList.concat(userId);
+    }
 
     return this.members;
   },
   remove(usersIds) {
     this.membersList = without(this.membersList, ...[].concat(usersIds));
 
-    return this.rows;
+    return this.members;
   }
 }
+
+companySchema.methods.projects = {
+  add(projectId) {
+    if (this.projectsList.indexOf(projectId) === -1) {
+      this.projectsList = this.projectsList.concat(projectId);
+    }
+
+    return this.projects;
+  },
+  remove(projectsIds) {
+    this.projectsList = without(this.projectsList, ...[].concat(projectsIds));
+
+    return this.projects;
+  },
+  list() {
+    return this.populate('projectsList').execPopulate();
+  }
+}
+
 
 module.exports = mongoose.model('Company', companySchema);

@@ -18,17 +18,17 @@ const projectSchema = new mongoose.Schema({
     trim:       true,
   },
 
-  releases: [{
+  releasesList: [{
     type: Number,
     ref: 'Release',
   }],
 
-  sprints: [{
+  sprintsList: [{
     type: Number,
     ref: 'Sprint',
   }],
   
-  backlog: [{
+  storiesList: [{
     type: Number,
     ref: 'Story',
   }],
@@ -42,20 +42,30 @@ const projectSchema = new mongoose.Schema({
   timestamps: true
 });
 
+projectSchema.statics.changeableFields = ['name', 'description'];
+
+projectSchema.methods.update = function(props) {
+  for (let prop in props) {
+    this[prop] = props[prop];
+  }
+
+  return this;
+}
+
 projectSchema.pre('remove',async function(next){
-  const dependants = ['releases', 'sprints', 'backlog', 'boardsList'];
+  const dependants = ['releasesList', 'sprintsList', 'storiesList', 'boardsList'];
   
   for (let dependant of dependants) {
     if (this[dependant].length !== 0 ) {
       let Model;
       switch (dependant) {
-        case 'releases':
+        case 'releasesList':
           Model = Release;
           break;
-        case 'sprints':
+        case 'sprintsList':
           Model = Sprint;
           break;
-        case 'backlog':
+        case 'storiesList':
           Model = Story;
           break;
         case 'boardsList':
@@ -80,19 +90,73 @@ projectSchema.pre('remove',async function(next){
   next();
 });
 
+projectSchema.methods.backlog = {
+  add(storyId) {
+    if (this.storiesList.indexOf(storyId) === -1) {
+      this.storiesList = this.storiesList.concat(storyId);
+    }
+
+    return this.backlog;
+  },
+  remove(storiesIds) {
+    this.storiesList = without(this.storiesList, ...[].concat(storiesIds));
+
+    return this.backlog;
+  },
+  list() {
+    return this.populate('storiesList').execPopulate();
+  }
+}
+
+projectSchema.methods.releases = {
+  add(releaseId) {
+    if (this.releasesList.indexOf(releaseId) === -1) {
+      this.releasesList = this.releasesList.concat(releaseId);
+    }
+
+    return this.releases;
+  },
+  remove(releasesIds) {
+    this.releasesList = without(this.releasesList, ...[].concat(releasesIds));
+
+    return this.releases;
+  },
+  list() {
+    return this.populate('releasesList').execPopulate();
+  }
+}
+
+projectSchema.methods.sprints = {
+  add(sprintId) {
+    if (this.sprintsList.indexOf(sprintId) === -1) {
+      this.sprintsList = this.sprintsList.concat(sprintId);
+    }
+
+    return this.sprints;
+  },
+  remove(sprintsIds) {
+    this.sprintsList = without(this.sprintsList, ...[].concat(sprintsIds));
+
+    return this.sprints;
+  },
+  list() {
+    return this.populate('sprintsList').execPopulate();
+  }
+}
+
 projectSchema.methods.boards = {
   add(boardId) {
-    this.boardsList.push(boardId);
+    if (this.boardsList.indexOf(boardId) === -1) {
+      this.boardsList = this.boardsList.concat(boardId);
+    }
 
     return this.boards;
   },
-
-  remove(boardId) {
-    this.boardsList = without(this.boardsList, boardId);
+  remove(boardsIds) {
+    this.boardsList = without(this.boardsList, ...[].concat(boardsIds));
 
     return this.boards;
   },
-
   list() {
     return this.populate('boardsList').execPopulate();
   }

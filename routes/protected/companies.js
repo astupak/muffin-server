@@ -5,7 +5,8 @@ const {
   remove,
   addMember,
   removeMember,
-} = require('../modules/company');
+  getProjects,
+} = require('../middlewares/company');
 
 const router = new Router();
 
@@ -15,5 +16,7 @@ router.delete('/', remove);
 
 router.put('/members', addMember);
 router.delete('/members', removeMember);
+
+router.get('/projects', getProjects)
 
 module.exports = router;
