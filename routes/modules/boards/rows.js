@@ -26,6 +26,7 @@ module.exports.createMany = async function(ids) {
     return { story };
   });
 
+  console.log(rows, ids);
   rows = await Row.create(rows);
   rows = rows.map((row) => row._id);
   

@@ -7,11 +7,15 @@ const {
   getBacklog,
   getReleases,
   getSprints,
-  getBoards,  
+  getBoards,
+  isAllowed,
+  setState,
 } = require('../middlewares/project');
 const router = new Router();
 
 router.post('/projects', create);
+
+router.use('/projects/:projectId', isAllowed, setState);
 
 router.get('/projects/:projectId', read);
 

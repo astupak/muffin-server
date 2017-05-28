@@ -86,8 +86,10 @@ boardSchema.methods.update = function(props) {
 
 
 boardSchema.methods.rows = {
-  add(rowsIds) {
-    this.rowsList = this.rowsList.concat(rowsIds);
+  add(rowId) {
+    if (this.rowsList.indexOf(rowId) === -1) {
+      this.rowsList = this.rowsList.concat(rowId);
+    }
 
     return this.rows;
   },
@@ -110,8 +112,10 @@ boardSchema.methods.rows = {
 }
 
 boardSchema.methods.cards = {
-  add(cardsIds) {
-    this.cardsList = this.cardsList.concat(cardsIds);
+  add(cardId) {
+    if (this.cardsList.indexOf(cardId) === -1) {
+      this.cardsList = this.cardsList.concat(cardId);
+    }
 
     return this.cards;
   },
@@ -134,8 +138,10 @@ boardSchema.methods.cards = {
 }
 
 boardSchema.methods.columns = {
-  add(columnsIds) {
-    this.columnsList = this.columnsList.concat(columnsIds);
+  add(columnId) {
+    if (this.columnsList.indexOf(columnId) === -1) {
+      this.columnsList = this.columnsList.concat(columnId);
+    }
 
     return this.columns;
   },

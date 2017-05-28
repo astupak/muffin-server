@@ -1,15 +1,15 @@
 const pick = require('lodash/pick');
-const Boards = require('../modules/board/board');
-const Rows = require('../modules/board/row');
-const Cards = require('../modules/board/card');
+const Boards = require('../../modules/boards/boards');
+const Rows = require('../../modules/boards/rows');
+const Cards = require('../../modules/boards/cards');
 
 module.exports.create = async function (ctx, next) {
   const card = await Cards.create(ctx.request.body.info);
-  const board = await Boards.get(ctx.params.boardId);
+  const {board} = ctx.state.elements;
   let row = null;
 
   if (board.rowsList.indexOf(ctx.params.rowId) !== -1) {
-    row = await Rows.get(ctx.params.rowId);
+    const {row} = ctx.state.elements;
   } else {
     ctx.throw(404);
   }
@@ -28,11 +28,11 @@ module.exports.create = async function (ctx, next) {
   return next();
 }
 
-module.exports.getCard = async function (ctx, next) {
+module.exports.read = async function (ctx, next) {
   const row = await Rows.get(ctx.params.rowId);
   
   if (row.cardsList.indexOf(ctx.params.cardId) !== -1) {
-    const card = await Cards.get(ctx.params.cardId);
+    const {card} = ctx.state.elements;
     
     ctx.status = 200;
     ctx.body = card;
@@ -43,21 +43,12 @@ module.exports.getCard = async function (ctx, next) {
   return next();
 }
 
-module.exports.getCards = async function (ctx, next) {
-  const row = await Rows.get(ctx.params.rowId);
-  const {cardsList: cards} = await row.cards.list();
-  
-  ctx.status = 200;
-  ctx.body = cards;
-
-  return next();
-}
 
 module.exports.update = async function (ctx, next) {
   const row = await Rows.get(ctx.params.rowId);
   
   if (row.cardsList.indexOf(ctx.params.cardId) !== -1) {
-    const card = await Cards.get(ctx.params.cardId);
+    const {card} = ctx.state.elements;
 
     card.update(pick(ctx.request.body, card.model('Card').changeableFields));
 
@@ -73,11 +64,11 @@ module.exports.update = async function (ctx, next) {
 }
 
 module.exports.remove = async function (ctx, next) {
-  const board = await Boards.get(ctx.params.boardId);
+  const {board, row} = ctx.state.elements;
   const card = await Cards.remove(ctx.params.cardId);
-  let row = await Rows.get(ctx.params.rowId);
 
   row.cards.remove(row._id);
+  board.cards.remove();
 
   await Promise.all([
     row.save(),
@@ -87,5 +78,27 @@ module.exports.remove = async function (ctx, next) {
   ctx.status = 200;
   ctx.body = card;
 
+  return next();
+}
+
+module.exports.isAllowed = async function(ctx, next) {
+  const allowedCards = ctx.state.allowed.cards;
+  const {cardId} = ctx.params;
+
+  if (allowedCards.indexOf(cardId) === -1) {
+    ctx.throw(404);
+  } else {
+    console.log('card allowed');
+    return next();
+  }
+}
+
+module.exports.setState = async function (ctx, next) {
+  const {cardId} = ctx.params;
+  let {allowed} = ctx.state;
+
+  const card = await Cards.get(cardId);
+
+  ctx.state.elements.card = card;
   return next();
 }

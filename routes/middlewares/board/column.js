@@ -1,10 +1,11 @@
-const Boards = require('../modules/board/board');
-const Columns = require('../modules/board/column');
+const pick = require('lodash/pick');
+const Boards = require('../../modules/boards/boards');
+const Columns = require('../../modules/boards/columns');
 
 module.exports.create = async function (ctx, next) {
   const column = await Columns.create(ctx.request.body.name);
   
-  let board = await Boards.get(ctx.params.boardId);
+  const {board} = ctx.state.elements;
 
   board.columns.add(column._id);
 
@@ -16,9 +17,8 @@ module.exports.create = async function (ctx, next) {
   return next();
 }
 
-module.exports.getColumn = async function (ctx, next) {
-  const board = await Boards.get(ctx.params.boardId);
-  console.log(board);
+module.exports.read = async function (ctx, next) {
+  const {board} = ctx.state.elements;
   
   if (board.columnsList.indexOf(ctx.params.columnId) !== -1) {
     const column = await Columns.getPopulated(ctx.params.columnId);
@@ -32,19 +32,28 @@ module.exports.getColumn = async function (ctx, next) {
   return next();
 }
 
-module.exports.getColumns = async function (ctx, next) {
-  const board = await Boards.get(ctx.params.boardId);
-  const {columnsList: columns} = await board.columns.list();
+module.exports.update = async function (ctx, next) {
+  const {board} = ctx.state.elements;
   
-  ctx.status = 200;
-  ctx.body = columns;
+  if (board.columnsList.indexOf(ctx.params.columnId) !== -1) {
+    const {column} = ctx.state.elements;
 
+    column.update(pick(ctx.request.body, column.model('Column').changeableFields));
+
+    await column.save();
+    
+    ctx.status = 200;
+    ctx.body = column;
+  } else {
+    ctx.throw(404);
+  }
+  
   return next();
 }
 
 module.exports.remove = async function (ctx, next) {
   const column = await Columns.remove(ctx.params.columnId);
-  let board = await Boards.get(ctx.params.boardId);
+  const {board} = ctx.state.elements;
 
   board.columns.remove(board._id);
 
@@ -57,7 +66,7 @@ module.exports.remove = async function (ctx, next) {
 }
 
 module.exports.move = async function (ctx, next) {
-  const board = await Boards.get(ctx.params.boardId);
+  const {board} = ctx.state.elements;
   let {from, to, card} = ctx.request.body;
   let [toFlag, cardFlag] = [
     board.columnsList.indexOf(to) !== -1,
@@ -103,3 +112,32 @@ module.exports.move = async function (ctx, next) {
 
   return next();
 }
+
+module.exports.isAllowed = async function(ctx, next) {
+  const allowedColumns = ctx.state.allowed.columns;
+  const {columnId} = ctx.params;
+
+  if (allowedColumns.indexOf(columnId) === -1) {
+    ctx.throw(404);
+  } else {
+    console.log('column allowed');
+    return next();
+  }
+}
+
+module.exports.setState = async function (ctx, next) {
+  const {columnId} = ctx.params;
+  let {allowed} = ctx.state;
+
+  const column = await Columns.get(columnId);
+
+  const {
+    cardsList: cards,
+  } = column;
+
+  ctx.state.elements.column = column;
+  return next();
+}
+
+
+

@@ -7,10 +7,15 @@ const {
   getBacklog,
   addStory,
   removeStory,
+  check,
+  isAllowed,
+  setState,
 } = require('../middlewares/sprint');
 const router = new Router();
 
 router.post('/sprints', create);
+
+router.use('/sprints/:sprintId', isAllowed, setState);
 
 router.get('/sprints/:sprintId', read);
 

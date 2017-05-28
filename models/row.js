@@ -35,8 +35,10 @@ rowSchema.pre('remove',async function(next){
 });
 
 rowSchema.methods.cards = {
-  add(cardsIds) {
-    this.cardsList = this.cardsList.concat(cardsIds);
+  add(cardId) {
+    if (this.cardsList.indexOf(cardId) === -1) {    
+      this.cardsList = this.cardsList.concat(cardId);
+    }
 
     return this.cards;
   },
