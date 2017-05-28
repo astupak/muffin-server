@@ -44,6 +44,7 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.statics.publicFields = ['_id', 'email', 'displayName'];
+userSchema.statics.changeableFields = ['email', 'displayName'];
 
 userSchema.virtual('password')
   .set(function(password) {
@@ -72,6 +73,14 @@ userSchema.methods.checkPassword = function(password) {
   if (!this.passwordHash) return false;
 
   return crypto.pbkdf2Sync(password, this.salt, config.crypto.hash.iterations, config.crypto.hash.length, 'sha1') == this.passwordHash;
+}
+
+userSchema.methods.update = function(props) {
+  for (let prop in props) {
+    this[prop] = props[prop];
+  }
+
+  return this;
 }
 
 userSchema.plugin(schema => {  

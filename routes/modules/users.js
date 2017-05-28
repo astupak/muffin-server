@@ -11,3 +11,11 @@ module.exports.create = async function(email, displayName, password) {
 
   return savedUser.toObject();
 };
+
+module.exports.get = async function(id) {
+ const user = await User.findById(id);
+
+ return user;
+};
+
+
