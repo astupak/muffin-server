@@ -85,6 +85,7 @@ module.exports.removeStory = async function (ctx, next) {
   const {sprint} = ctx.state.elements;
   
   sprint.backlog.remove(parseInt(ctx.params.storyId));
+  
   await sprint.save();
 
   ctx.status = 200;
@@ -115,7 +116,7 @@ module.exports.setState = async function (ctx, next) {
     storiesList: stories,  
   } = sprint;
 
-  allowed = Object.assign(allowed, {
+  ctx.state.allowed = Object.assign(allowed, {
     stories
   });
 

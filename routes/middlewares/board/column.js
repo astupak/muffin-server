@@ -55,7 +55,7 @@ module.exports.remove = async function (ctx, next) {
   const column = await Columns.remove(ctx.params.columnId);
   const {board} = ctx.state.elements;
 
-  board.columns.remove(board._id);
+  board.columns.remove(column._id);
 
   await board.save();
   
@@ -67,48 +67,25 @@ module.exports.remove = async function (ctx, next) {
 
 module.exports.move = async function (ctx, next) {
   const {board} = ctx.state.elements;
-  let {from, to, card} = ctx.request.body;
-  let [toFlag, cardFlag] = [
-    board.columnsList.indexOf(to) !== -1,
-    board.cardsList.indexOf(card) !== -1,
-  ];
-  let fromFlag;
+  const {card} = ctx.request.body;
+  const allowedColumns = ctx.state.allowed.columns;
+  const allowedCards = ctx.state.allowed.cards;
 
-  if (from) {
-    fromFlag = board.columnsList.indexOf(from) !== -1
-  } 
+  if (allowedCards.indexOf(card) !== -1) {
+    let columns = await Columns.removeCard(allowedColumns, card);
+    let {column} = ctx.state.elements;
 
-  if ((from && !fromFlag) || (!toFlag || !cardFlag)) {
-    ctx.throw(400)
-  } else {
-    let promises = [];
-    let {columnsList: columns} = await board.columns.list();
+    column.cards.add(card);
 
-    if (from) {
-      let fromColumn = columns.find((el) => el._id === from);
+    await column.save();
 
-      fromColumn.cards.remove(card);
-
-      promises.push(fromColumn.save());
-    } else {
-      let fromColumn = columns.find((el) => el.cardsList.indexOf(card) !== -1);
-
-      fromColumn.cards.remove(card);
-
-      promises.push(fromColumn.save());
-    }
-
-    let toColumn = columns.find((el) => el._id === to);
-
-    toColumn.cards.add(card);
-    promises.push(toColumn.save());
-
-    await Promise.all(promises);
-
+    ctx.body = column;
     ctx.status = 200;
-    ctx.body = columns;
 
+  } else {
+    ctx.throw(400);
   }
+  
 
   return next();
 }
@@ -130,10 +107,6 @@ module.exports.setState = async function (ctx, next) {
   let {allowed} = ctx.state;
 
   const column = await Columns.get(columnId);
-
-  const {
-    cardsList: cards,
-  } = column;
 
   ctx.state.elements.column = column;
   return next();

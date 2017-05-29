@@ -44,7 +44,7 @@ module.exports.remove = async function(ctx, next) {
   const story = await Stories.remove(ctx.params.storyId);
   const {project} = ctx.state.elements;
 
-  project.backlog.remove(project._id);
+  project.backlog.remove(story._id);
 
   await project.save();
 
@@ -53,6 +53,33 @@ module.exports.remove = async function(ctx, next) {
 
   return next();
 };
+
+module.exports.estimate = async function (ctx, next) {
+  const {story} = ctx.state.elements;
+
+  story.setEstimation(ctx.request.body.estimation);
+
+  await story.save();
+
+  ctx.status = 200;
+  ctx.body = story;
+
+  return next();
+}
+
+module.exports.prioritize = async function (ctx, next) {
+  const {story} = ctx.state.elements;
+
+  story.setPriority(ctx.request.body.priority);
+
+  await story.save();
+
+
+  ctx.status = 200;
+  ctx.body = story;
+
+  return next();
+}
 
 module.exports.isAllowed = async function(ctx, next) {
   const allowedStories = ctx.state.allowed.stories;

@@ -27,7 +27,7 @@ rowSchema.plugin(autoIncrement.plugin, {
 rowSchema.pre('remove',async function(next){
   await Card.remove({
     _id: {
-      $in: this.cards
+      $in: this.cardsList
     }
   })
   

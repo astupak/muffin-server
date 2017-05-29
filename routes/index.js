@@ -22,7 +22,8 @@ const {
 
 const router = new Router();
 
-router.use(usersRouter.routes());
+router.use('/user/:userId', JWTAuth, usersRouter.routes());
+// router.use(usersRouter.routes());
 
 router.post('/login', login, generateToken);
 router.post('/user', createUser);
@@ -36,6 +37,5 @@ projectsRouter.use('/projects/:projectId', boardsRouter.routes());
 companiesRouter.use(projectsRouter.routes());
 
 router.use('/companies/:companyId', JWTAuth, checkPermissions, companiesRouter.routes());
-router.use('/user/:userId', JWTAuth, usersRouter.routes());
 
 module.exports = router.routes();

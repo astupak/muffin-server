@@ -5,14 +5,7 @@ const Cards = require('../../modules/boards/cards');
 
 module.exports.create = async function (ctx, next) {
   const card = await Cards.create(ctx.request.body.info);
-  const {board} = ctx.state.elements;
-  let row = null;
-
-  if (board.rowsList.indexOf(ctx.params.rowId) !== -1) {
-    const {row} = ctx.state.elements;
-  } else {
-    ctx.throw(404);
-  }
+  const {board, row} = ctx.state.elements;
 
   row.cards.add(card.id);
   board.cards.add(card.id);
@@ -65,10 +58,10 @@ module.exports.update = async function (ctx, next) {
 
 module.exports.remove = async function (ctx, next) {
   const {board, row} = ctx.state.elements;
-  const card = await Cards.remove(ctx.params.cardId);
+  const card = await Cards.remove(parseInt(ctx.params.cardId));
 
   row.cards.remove(row._id);
-  board.cards.remove();
+  board.cards.remove(card._id);
 
   await Promise.all([
     row.save(),
@@ -78,6 +71,39 @@ module.exports.remove = async function (ctx, next) {
   ctx.status = 200;
   ctx.body = card;
 
+  return next();
+}
+
+module.exports.assign = async function (ctx, next) {
+  const {card} = ctx.state.elements;
+  const allowedUsers = ctx.state.allowed.members;
+  const userId = ctx.request.body.user;
+
+  if (allowedUsers.indexOf(userId) !== -1) {
+    card.assignees.add(userId);
+
+    await card.save();
+
+    ctx.body = card;
+    ctx.status = 200;
+  } else {
+    ctx.throw(400);
+  }
+  
+  return next();
+}
+
+module.exports.unassign = async function (ctx, next) {
+  const {card} = ctx.state.elements;
+  const userId = parseInt(ctx.params.assigneeId);
+
+  card.assignees.remove(userId);
+
+  await card.save();
+
+  ctx.body = card;
+  ctx.status = 200;
+  
   return next();
 }
 

@@ -40,8 +40,9 @@ module.exports.update = async function (ctx, next) {
 }
 
 module.exports.remove = async function(ctx, next) {
-  const {project, company} = ctx.state.elements;
-
+  const {company} = ctx.state.elements;
+  const project = await Projects.remove(ctx.params.projectId);
+  
   company.projects.remove(project._id);
 
   await company.save();
@@ -117,7 +118,7 @@ module.exports.setState = async function (ctx, next) {
     storiesList: stories,  
   } = project;
 
-  allowed = Object.assign(allowed, {
+  ctx.state.allowed = Object.assign(allowed, {
     boards,
     releases,
     sprints,

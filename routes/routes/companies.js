@@ -6,6 +6,7 @@ const {
   addMember,
   removeMember,
   getProjects,
+  getMembers,
 } = require('../middlewares/company');
 
 const router = new Router();
@@ -15,7 +16,8 @@ router.patch('/', update);
 router.delete('/', remove);
 
 router.put('/members', addMember);
-router.delete('/members', removeMember);
+router.get('/members', getMembers);
+router.delete('/members/:userId', removeMember);
 
 router.get('/projects', getProjects)
 

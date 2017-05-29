@@ -20,9 +20,19 @@ const columnSchema = new mongoose.Schema({
 
 columnSchema.statics.changeableFields = ['name'];
 
+columnSchema.methods.update = function(props) {
+  for (let prop in props) {
+    this[prop] = props[prop];
+  }
+
+  return this;
+}
+
 columnSchema.methods.cards = {
-  add(cardsIds) {
-    this.cardsList = this.cardsList.concat(cardsIds);
+  add(cardId) {
+    if (this.cardsList.indexOf(cardId) === -1) {
+      this.cardsList = this.cardsList.concat(cardId);
+    }
 
     return this.cards;
   },

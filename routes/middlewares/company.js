@@ -68,7 +68,7 @@ module.exports.addMember = async function(ctx, next) {
 
 module.exports.removeMember = async function(ctx, next) {
   const company = await Companies.get(ctx.params.companyId);
-  const userId = ctx.request.body.user;
+  const userId = parseInt(ctx.params.userId);
 
   if (company.membersList.indexOf(userId) !== -1 && company.membersList.length !== 0) {
     company.members.remove(userId);
@@ -91,6 +91,16 @@ module.exports.getProjects = async function(ctx, next) {
 
   ctx.status = 200;
   ctx.body = projects;
+
+  return next();
+}
+
+module.exports.getMembers = async function(ctx, next) {
+  const company = await Companies.get(ctx.params.companyId);
+  const {membersList: members} = company;
+
+  ctx.status = 200;
+  ctx.body = members;
 
   return next();
 }

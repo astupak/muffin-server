@@ -34,11 +34,17 @@ module.exports.createMany = async function(ids) {
 };
 
 module.exports.remove = async function(id) {
-  await Row.remove({
+  let elems = await Row.find({
     _id: {
       $in: id
     }
   });
 
-  return [];
+  let promises = elems.map((el)=> {
+    return el.remove();
+  });
+
+  await Promise.all(promises);
+
+  return elems;
 };

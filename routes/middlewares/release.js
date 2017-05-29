@@ -106,7 +106,7 @@ module.exports.getSprints = async function (ctx, next) {
 module.exports.addSprint = async function (ctx, next) {
   const {release, project} = ctx.state.elements;
   
-  if (project.releasesList.indexOf(ctx.request.body.sprint) !== -1) {
+  if (project.sprintsList.indexOf(ctx.request.body.sprint) !== -1) {
     release.sprints.add(ctx.request.body.sprint);
     
     await release.save();
@@ -114,6 +114,7 @@ module.exports.addSprint = async function (ctx, next) {
     ctx.status = 200;
     ctx.body = release;
   } else {
+    console.log(123);
     ctx.throw(400);
   }
 
@@ -155,7 +156,7 @@ module.exports.setState = async function (ctx, next) {
     storiesList: stories,  
   } = release;
 
-  allowed = Object.assign(allowed, {
+  ctx.state.allowed = Object.assign(allowed, {
     sprints,
     stories
   });

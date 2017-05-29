@@ -1,6 +1,7 @@
 const pick = require('lodash/pick');
 const Boards = require('../../modules/boards/boards');
 const Rows = require('../../modules/boards/rows');
+const Columns = require('../../modules/boards/columns');
 const Projects = require('../../modules/projects');
 const Sprints = require('../../modules/sprints');
 
@@ -56,21 +57,23 @@ module.exports.remove = async function (ctx, next) {
 
 module.exports.assignSprint = async function(ctx, next) {
   const {board, project} = ctx.state.elements;
-  const sprint = Sprints.get(ctx.request.body.sprint);
-  if (sprint && sprint.storiesList.length && project.sprintsList.indexOf(sprint._id) !== -1) {
-    const rows = await Rows.createMany(sprint.storiesList);
+  const sprint = await Sprints.get(ctx.request.body.sprint);
 
-    let promises = [board.save()];
+  if (sprint && sprint.storiesList.length && project.sprintsList.indexOf(sprint._id) !== -1) {
 
     if (board.rowsList.length) {
+      await Rows.remove(board.rowsList);
+      await Columns.removeCard(ctx.state.allowed.columns, board.cardsList);
       board.rows.clear();
-      promises.push(Rows.remove(board.rowsList));
     }
+
+    const rows = await Rows.createMany(sprint.storiesList);
 
     board.setSprint(sprint._id);
     board.rows.add(rows);
+    board.cards.clear();
 
-    let [savedBoard,,] = await Promise.all(promises);
+    const savedBoard = await board.save();
 
     ctx.satus = 200;
     ctx.body = savedBoard;
@@ -103,7 +106,9 @@ module.exports.getColumns = async function(ctx, next) {
 
 module.exports.getCards = async function(ctx, next) {
   const {board} = ctx.state.elements;
+  console.log(2, board);
   const {cardsList: cards} = await board.cards.list();
+  console.log(2, board);
 
   ctx.status = 200;
   ctx.body = cards;
@@ -135,13 +140,14 @@ module.exports.setState = async function (ctx, next) {
     cardsList: cards,
   } = board;
 
-  allowed = Object.assign(allowed, {
+  ctx.state.allowed = Object.assign(allowed, {
     rows,
     columns,
     cards,
   });
 
   ctx.state.elements.board = board;
+
   return next();
 }
 

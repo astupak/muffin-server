@@ -48,7 +48,7 @@ module.exports.setState = async function (ctx, next) {
     cardsList: cards,
   } = row;
 
-  allowed = Object.assign(allowed, {
+  ctx.state.allowed = Object.assign(allowed, {
     cards,
   });
 

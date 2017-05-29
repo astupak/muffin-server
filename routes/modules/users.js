@@ -9,7 +9,7 @@ module.exports.create = async function(email, displayName, password) {
 
   let savedUser = await user.save();
 
-  return savedUser.toObject();
+  return savedUser;
 };
 
 module.exports.get = async function(id) {

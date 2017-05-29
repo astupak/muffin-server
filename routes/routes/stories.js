@@ -4,6 +4,8 @@ const {
   read,
   update,
   remove,
+  estimate,
+  prioritize,
   isAllowed,
   setState,
 } = require('../middlewares/story');
@@ -17,5 +19,8 @@ router.get('/backlog/:storyId', read);
 
 router.patch('/backlog/:storyId', update);
 router.delete('/backlog/:storyId', remove);
+
+router.post('/backlog/:storyId/estimate', estimate);
+router.post('/backlog/:storyId/prioritize', prioritize);
 
 module.exports = router;

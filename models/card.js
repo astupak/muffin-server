@@ -1,5 +1,6 @@
 const autoIncrement = require('mongoose-auto-increment');
 const mongoose = require('mongoose');
+const without = require('lodash/without');
 
 const cardSchema = new mongoose.Schema({
   info: {
@@ -30,6 +31,21 @@ cardSchema.methods.update = function(props) {
   }
 
   return this;
+}
+
+cardSchema.methods.assignees = {
+  add(userId) {
+    if (this.assignedTo.indexOf(userId) === -1) {
+      this.assignedTo = this.assignedTo.concat(userId);
+    }
+
+    return this.assignees;
+  },
+  remove(usersIds) {
+    this.assignedTo = without(this.assignedTo, ...[].concat(usersIds));
+
+    return this.assignees;
+  },
 }
 
 module.exports = mongoose.model('Card', cardSchema);

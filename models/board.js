@@ -19,7 +19,7 @@ const boardSchema = new mongoose.Schema({
 
   cardsList: [{
     type: Number,
-    ref: 'Row',
+    ref: 'Card',
   }],
 
   rowsList: [{
@@ -39,16 +39,16 @@ const boardSchema = new mongoose.Schema({
 boardSchema.statics.changeableFields = ['name'];
 
 boardSchema.pre('remove',async function(next){
-  const dependants = ['rows', 'columns'];
+  const dependants = ['rowsList', 'columnsList'];
   
   for (let dependant of dependants) {
     if (this[dependant].length !== 0 ) {
       let Model;
       switch (dependant) {
-        case 'rows':
+        case 'rowsList':
           Model = Row;
           break;
-        case 'columns':
+        case 'columnsList':
           Model = Column;
           break;
       }
